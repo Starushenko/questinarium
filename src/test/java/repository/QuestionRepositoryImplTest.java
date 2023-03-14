@@ -1,5 +1,6 @@
 package repository;
 
+import model.Question;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,23 @@ public class QuestionRepositoryImplTest {
         System.out.println(questionRepository.getByTopic("OOP"));
     }
 
+    @Test
+    public void deleteTest(){
+        QuestionRepositoryImpl questionRepository = new QuestionRepositoryImpl(connection);
+        questionRepository.delete(7);
+    }
 
+    @Test
+    public void saveTest(){
+        QuestionRepositoryImpl questionRepository = new QuestionRepositoryImpl(connection);
+        questionRepository.save(Question.builder().id(10).text("test saved text").topic("Save").build());
+    }
+
+    @Test
+    public void updateTest(){
+        QuestionRepositoryImpl questionRepository = new QuestionRepositoryImpl(connection);
+        questionRepository.update(Question.builder().id(10).text("UPDATE saved text").topic("UPDATE").build());
+    }
 
 
 
