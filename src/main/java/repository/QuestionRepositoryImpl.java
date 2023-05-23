@@ -3,6 +3,7 @@ package repository;
 import model.Question;
 import repository.dao.QuestionRepository;
 
+import javax.tools.ForwardingJavaFileManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,19 +13,15 @@ import java.util.List;
 
 public class QuestionRepositoryImpl implements QuestionRepository {
 
+
     private Connection connection;
 
     public QuestionRepositoryImpl(Connection connection) {
         this.connection = connection;
     }
-    private String findById =
+    private String getRnd =
             """
-                    select * from question where id = ?
-            """;
-
-    private String findByTopic =
-            """
-                    select * from question where topic = ?
+                    select * from question ORDER BY RAND() LIMIT 1 ?
             """;
 
     private String save =
@@ -34,24 +31,19 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                     topic)
                            VALUES (?, ?)
             """;
-    private String update =
-            """
-                    update question set           
-                    text = ?, 
-                    topic = ?           
-                    where id = ?
-            """;
 
     private String deleteById =
             """
                  delete from question where id = ?
             """;
+
+
+
+
     @Override
-    public Question get(int id) {
+    public Question getRnd() {
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(findById);
-            preparedStatement.setInt(1, id);
-            preparedStatement.execute();
+            PreparedStatement preparedStatement = connection.prepareStatement(getRnd);
             ResultSet resultSet = preparedStatement.getResultSet();
             resultSet.next();
             return Question.builder()
@@ -66,27 +58,6 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         }
     }
 
-    @Override
-    public List<Question> getByTopic(String topic) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(findByTopic);
-            preparedStatement.setString(1, topic);
-            preparedStatement.execute();
-            ResultSet resultSet = preparedStatement.getResultSet();
-            List<Question> questions = new ArrayList<>();
-            while (resultSet.next()){
-                questions.add(Question.builder()
-                        .id(resultSet.getInt("id"))
-                        .text(resultSet.getString("text"))
-                        .topic(resultSet.getString("topic"))
-                        .build()
-                );
-            }
-            return questions;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
     @Override
     public void delete(int id) {
         try {
@@ -113,19 +84,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     }
 
-    @Override
-    public void update(Question question) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(update);
-            preparedStatement.setString(1, question.getText());
-            preparedStatement.setString(2, question.getTopic());
-            preparedStatement.setInt(3, question.getId());
-            preparedStatement.execute();
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
 
