@@ -2,13 +2,13 @@ package repository.dao;
 
 import model.Question;
 
-import java.util.Collection;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface QuestionRepository {
-    Question get(int id);
-    void save(Question question);
-    void update(Question question);
+    Question getRnd();
+    void save(Question saveQuestion);
     void delete(int id);
-    List<Question> getByTopic(String topic);
+
+
 }
